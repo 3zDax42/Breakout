@@ -5,29 +5,47 @@ class Brick:
     def __init__(self, xpos, ypos):
         self.xpos = xpos
         self.ypos = ypos
-        self.color = (random.randrange(100, 250), random.randrange(100, 250), random.randrange(100, 250))
+        if self.ypos == 100:
+            self.color = (0, 0, 200)
+            self.points_gained = 0
+        elif self.ypos == 75:
+            self.color = (0, 200, 0)
+            self.points_gained = 1
+        elif self.ypos == 50:
+            self.color = (200, 200, 0)
+            self.points_gained = 3
+        elif self.ypos == 25:
+            self.color = (200, 100, 0)
+            self.points_gained = 5
+        else:
+            self.color = (200, 0, 0)
+            self.points_gained = 7
         self.isDead = False
     def draw(self):
         if not self.isDead:
-            pygame.draw.rect(screen, self.color, (self.xpos, self.ypos, 100, 50))
+            pygame.draw.rect(screen, self.color, (self.xpos, self.ypos, 50, 25))
     def collision(self, bx, by):
         if not self.isDead:
-            if (bx + 5 > self.xpos and bx - 5 < self.xpos + 100) and (by + 5 > self.ypos and by - 5 < self.ypos + 50):
+            if (bx + 5 > self.xpos and bx - 5 < self.xpos + 50) and (by + 5 > self.ypos and by - 5 < self.ypos + 25):
                 self.isDead = True
                 return True
         return False
+    def score(self):
+        if self.isDead:
+            return int(self.points_gained)
 screen = pygame.display.set_mode((700,500))
 pygame.display.set_caption("Breakout")
 doExit = False
 clock = pygame.time.Clock()
 PaddleXpos = 200; PaddleYpos = 450#paddle cordanites
 bx = 350; by = 250 #ball position
-bVx = 5; bVy = 5 #ball velocity
+bVx = 2; bVy = -2 #ball velocity
+game_score = 0
 WHITE = (255,255,255)
 Brick_list = []
-for i in range (3):
-    for j in range (6):
-        Brick_list.append(Brick(j*105+38,i*55+10))
+for i in range (5):
+    for j in range (14):
+        Brick_list.append(Brick(j*50,i*25))
 
 while not doExit: #event queue stuff
     clock.tick(60)
@@ -48,11 +66,18 @@ while not doExit: #event queue stuff
     for i in range(len(Brick_list)):
         if Brick_list[i].collision(bx, by):
             bVy *= -1
+            game_score += Brick_list[i].score()
+    if bVy < 5:
+        bVy *= 1.001
+        bVx *= 1.001
     #--------------Render section--------------#
     screen.fill((0,0,0))
     for i in range(len(Brick_list)):
         Brick_list[i].draw()
     pygame.draw.rect(screen,(WHITE), (PaddleXpos, PaddleYpos, 100, 20), 2)
     pygame.draw.circle(screen,(WHITE), (bx, by), 5)
+    font = pygame.font.Font(None, 74)
+    text = font.render(str(game_score), 1,(WHITE))
+    screen.blit(text, (250,50))
     pygame.display.flip()
 pygame.quit() #when game is done close down pygame
