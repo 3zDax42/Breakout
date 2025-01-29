@@ -39,7 +39,7 @@ doExit = False
 clock = pygame.time.Clock()
 PaddleXpos = 200; PaddleYpos = 450#paddle cordanites
 bx = 350; by = 250 #ball position
-bVx = 2; bVy = -2 #ball velocity
+bVx = 4; bVy = -4 #ball velocity
 game_score = 0
 WHITE = (255,255,255)
 Brick_list = []
@@ -67,9 +67,6 @@ while not doExit: #event queue stuff
         if Brick_list[i].collision(bx, by):
             bVy *= -1
             game_score += Brick_list[i].score()
-    if bVy < 5:
-        bVy *= 1.001
-        bVx *= 1.001
     #--------------Render section--------------#
     screen.fill((0,0,0))
     for i in range(len(Brick_list)):
